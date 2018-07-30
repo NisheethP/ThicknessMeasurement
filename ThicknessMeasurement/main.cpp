@@ -21,51 +21,84 @@ sf::Font font;
 
 int main()
 {
-	//sf::RenderWindow window(sf::VideoMode(510, 125), "Percent done");
-	/*
-	if (!font.loadFromFile("C:\\Windows\\Fonts\\Calibri.ttf"))
-	{
-		std::cout << "Font not loaded";
-		return -1;
-	}*/
-
 	std::string baseImagePath = "G:\\TEST_IMAGES\\Original\\";
 	std::string imageName;
-	std::cout << "Enter File Name (without extention):  ";
-	std::cin >> imageName;
-	baseImagePath += imageName + ".jpg";
+	
+	bool singleFile = false;
+	char x;
+	std::cout << "Single file (y/n): ";
+	std::cin >> x;
 
-	sf::Image baseImage, grayScaleImage, contrastImage;
-	if (!baseImage.loadFromFile(baseImagePath))
+	singleFile = ((x=='y') || x=='Y');
+
+	int initNumber;
+	int finalNumber;
+
+	if (!singleFile)
 	{
-		std::cout << "Image loading failed";
-		//return -1;
+		std::cout << "\nEnter the initial file number: ";
+		std::cin >> initNumber;
+
+		std::cout << "\nEnter the final file number: ";
+		std::cin >> finalNumber;
+
+		int threshold = 150;
+		std::cout << "\nEnter the threshold for the intensity of the edge: ";
+		std::cin >> threshold;
+
+		for (int i = initNumber; i <= finalNumber; i++)
+		{
+			for (int j = 1; j <= 3; j++)
+			{
+				baseImagePath = "G:\\TEST_IMAGES\\Original\\";
+				imageName = std::to_string(i) + "-" + std::to_string(j);
+				baseImagePath += imageName + ".jpg";
+				sf::Image baseImage, grayScaleImage, contrastImage;
+				if (!baseImage.loadFromFile(baseImagePath))
+				{
+					std::cout << "Image loading failed";
+					//return -1;
+				}
+
+				if (!contrastImage.loadFromFile(baseImagePath))
+				{
+					std::cout << "Image loading failed";
+					//return -1;
+				}
+
+				GetWidth(baseImage, contrastImage, imageName, threshold);
+				std::string contrastImagePath = "G:\\TEST_IMAGES\\Final\\" + imageName + ".jpg";
+				contrastImage.saveToFile(contrastImagePath);
+			}
+		}
+	}
+	else if (singleFile)
+	{
+		std::cout << "Enter File Name (without extention):  ";
+		std::cin >> imageName;
+		baseImagePath += imageName + ".jpg";
+		int threshold = 100;
+		std::cout << "\nEnter the threshold for the intensity of the edge: ";
+		std::cin >> threshold;
+		
+		sf::Image baseImage, grayScaleImage, contrastImage;
+		if (!baseImage.loadFromFile(baseImagePath))
+		{
+			std::cout << "Image loading failed";
+			//return -1;
+		}
+
+		if (!contrastImage.loadFromFile(baseImagePath))
+		{
+			std::cout << "Image loading failed";
+			//return -1;
+		}
+
+		GetWidth(baseImage, contrastImage, imageName, threshold);
+		std::string contrastImagePath = "G:\\TEST_IMAGES\\Final\\" + imageName + ".jpg";
+		contrastImage.saveToFile(contrastImagePath);		
 	}
 
-	if (!contrastImage.loadFromFile(baseImagePath))
-	{
-		std::cout << "Image loading failed";
-		//return -1;
-	}
-
-	int threshold = 150;
-	std::cout << "\nEnter the threshold for the intensity of the edge: ";
-	std::cin >> threshold;
-
-	/*
-	sf::Vector2u baseImageSize = baseImage.getSize();
-
-	makeGrayScale(baseImage,grayScaleImage);
-
-	std::string grayImagePath = "G:\\TEST_IMAGES\\Grayscale\\" + imageName;
-	grayScaleImage.saveToFile(grayImagePath);
-
-	makeContrast(grayScaleImage, contrastImage);
-	*/
-
-	GetWidth(baseImage, contrastImage, imageName, threshold);
-	std::string contrastImagePath = "G:\\TEST_IMAGES\\Final\\" + imageName + ".jpg";
-	contrastImage.saveToFile(contrastImagePath);
 	return 0;
 }
 
